@@ -2,12 +2,32 @@ import React from 'react'
 import styled from 'styled-components'
 import { auth, provider } from '../firebase'
 
+import { useHistory } from 'react-router-dom'
+
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUserPhoto, selectUserName, setUserLoginDetails } from '../redux/features/userSlice'
+
 const Header = () => {
+
+  const dispatch = useDispatch()
+  const history = useHistory()
+  const userName = useSelector(selectUserName)
+  const userPhoto = useSelector(selectUserPhoto)
 
   const handleAuth = () => {
     auth.signInWithPopup(provider).then((result) => {
-      console.log(result)
+      setUser(result.user)
     }).catch(error => alert(error.message))
+  }
+
+  const setUser = (user) => {
+    dispatch(
+      setUserLoginDetails({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+      })
+    );
   }
 
   return (
@@ -15,33 +35,40 @@ const Header = () => {
       <Logo>
         <img src="./images/logo.svg" alt="Logo" />
       </Logo>
-      <NavMenu>
-        <a href="/home">
-          <img src="./images/home-icon.svg" alt="Home" />
-          <span>home</span>
-        </a>
-        <a href="/search">
-          <img src="./images/search-icon.svg" alt="Search" />
-          <span>search</span>
-        </a>
-        <a href="/watchlist">
-          <img src="./images/watchlist-icon.svg" alt="Watchlist" />
-          <span>watchlist</span>
-        </a>
-        <a href="/originals">
-          <img src="./images/original-icon.svg" alt="Originals" />
-          <span>originals</span>
-        </a>
-        <a href="/movies">
-          <img src="./images/movie-icon.svg" alt="Movies" />
-          <span>movies</span>
-        </a>
-        <a href="/series">
-          <img src="./images/series-icon.svg" alt="Series" />
-          <span>series</span>
-        </a>
-      </NavMenu>
-      <Login onClick={handleAuth}>login</Login>
+
+      { userName ? <Login onClick={handleAuth}>Login</Login>
+        : 
+        <>
+        <NavMenu>
+          <a href="/home">
+            <img src="./images/home-icon.svg" alt="Home" />
+            <span>home</span>
+          </a>
+          <a href="/search">
+            <img src="./images/search-icon.svg" alt="Search" />
+            <span>search</span>
+          </a>
+          <a href="/watchlist">
+            <img src="./images/watchlist-icon.svg" alt="Watchlist" />
+            <span>watchlist</span>
+          </a>
+          <a href="/originals">
+            <img src="./images/original-icon.svg" alt="Originals" />
+            <span>originals</span>
+          </a>
+          <a href="/movies">
+            <img src="./images/movie-icon.svg" alt="Movies" />
+            <span>movies</span>
+          </a>
+          <a href="/series">
+            <img src="./images/series-icon.svg" alt="Series" />
+            <span>series</span>
+          </a>
+        </NavMenu>
+        <UserImg src={userPhoto} alt={userName} />
+      </>
+      }
+      
     </Nav>
   );
 }
@@ -137,6 +164,12 @@ const NavMenu = styled.div`
     display: none;
   }
 `;
+
+const UserImg = styled.img`
+  height: 100%;
+  border: 50%;
+  
+`
 
 const Login = styled.a`
   background-color: rgba(0, 0, 0, 0.6);
