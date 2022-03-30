@@ -1,23 +1,34 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { auth, provider } from '../firebase'
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { selectUserPhoto, selectUserName, setUserLoginDetails } from '../redux/features/userSlice'
+import { selectUserPhoto, selectUserName, setUserLoginDetails, setSignOutState } from '../redux/features/userSlice'
+import { Link } from 'react-router-dom'
 
 const Header = () => {
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const userName = useSelector(selectUserName)
   const userPhoto = useSelector(selectUserPhoto)
 
   const handleAuth = () => {
-    auth.signInWithPopup(provider).then((result) => {
-      setUser(result.user)
-    }).catch(error => alert(error.message))
+    if (!userName) {
+      auth
+        .signInWithPopup(provider)
+        .then((result) => {
+          setUser(result.user);
+        })
+        .catch((error) => alert(error.message));
+    } else if(userName){
+      auth.signOut().then(() => {
+        dispatch(setSignOutState());
+        navigate("/");
+      }).catch((err) => alert(err.message))
+    }
   }
 
   const setUser = (user) => {
@@ -30,45 +41,62 @@ const Header = () => {
     );
   }
 
+  useEffect(() => {
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUser(user);
+        navigate("/home");
+      }
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   return (
     <Nav>
       <Logo>
-        <img src="./images/logo.svg" alt="Logo" />
+        <Link to={"/"}>
+          <img src="./images/logo.svg" alt="Logo" />
+        </Link>
       </Logo>
 
-      { userName ? <Login onClick={handleAuth}>Login</Login>
-        : 
+      {!userName ? (
+        <Login onClick={handleAuth}>Login</Login>
+      ) : (
         <>
-        <NavMenu>
-          <a href="/home">
-            <img src="./images/home-icon.svg" alt="Home" />
-            <span>home</span>
-          </a>
-          <a href="/search">
-            <img src="./images/search-icon.svg" alt="Search" />
-            <span>search</span>
-          </a>
-          <a href="/watchlist">
-            <img src="./images/watchlist-icon.svg" alt="Watchlist" />
-            <span>watchlist</span>
-          </a>
-          <a href="/originals">
-            <img src="./images/original-icon.svg" alt="Originals" />
-            <span>originals</span>
-          </a>
-          <a href="/movies">
-            <img src="./images/movie-icon.svg" alt="Movies" />
-            <span>movies</span>
-          </a>
-          <a href="/series">
-            <img src="./images/series-icon.svg" alt="Series" />
-            <span>series</span>
-          </a>
-        </NavMenu>
-        <UserImg src={userPhoto} alt={userName} />
-      </>
-      }
-      
+          <NavMenu>
+            <Link to={"/home"}>
+              <img src="./images/home-icon.svg" alt="Home" />
+              <span>home</span>
+            </Link>
+            <a href="/search">
+              <img src="./images/search-icon.svg" alt="Search" />
+              <span>search</span>
+            </a>
+            <a href="/watchlist">
+              <img src="./images/watchlist-icon.svg" alt="Watchlist" />
+              <span>watchlist</span>
+            </a>
+            <a href="/originals">
+              <img src="./images/original-icon.svg" alt="Originals" />
+              <span>originals</span>
+            </a>
+            <a href="/movies">
+              <img src="./images/movie-icon.svg" alt="Movies" />
+              <span>movies</span>
+            </a>
+            <a href="/series">
+              <img src="./images/series-icon.svg" alt="Series" />
+              <span>series</span>
+            </a>
+          </NavMenu>
+          <SignOut>
+            <UserImg src={userPhoto} alt={userName} />
+            <DropDown>
+              <span onClick={handleAuth}>Sign out</span>
+            </DropDown>
+          </SignOut>
+        </>
+      )}
     </Nav>
   );
 }
@@ -167,9 +195,43 @@ const NavMenu = styled.div`
 
 const UserImg = styled.img`
   height: 100%;
-  border: 50%;
+  border-radius: 50%;
+  cursor: pointer;
+`
+const DropDown = styled.div`
+  position: absolute;
+  top: 48px;
+  right: 0px;
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  background-color: rgb(19, 19, 19);
+  box-shadow: rgb(0, 0, 0 / 50%) 0px 0px 18px 0px;
+  padding: 10px;
+  border: 1px solid rgba(151, 151, 151, 0.34);
+  border-radius: 4px;
+  width: 100px;
+  opacity: 0;
+  cursor: pointer;
+`;
+
+const SignOut = styled.div`
+  position: relative;
+  height: 48px;
+  width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover{
+    ${ DropDown }{
+      opacity: 1;
+      transition-duration: 1s;
+    }
+  }
+
   
 `
+
 
 const Login = styled.a`
   background-color: rgba(0, 0, 0, 0.6);
@@ -181,6 +243,7 @@ const Login = styled.a`
   font-weight: 500;
   line-height: 1.5;
   transition: all 0.2s ease 0s;
+  cursor: pointer;
 
   &:hover {
     background-color: #f9f9f9;
