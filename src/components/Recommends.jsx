@@ -1,35 +1,30 @@
 import React from 'react'
 import styled from 'styled-components'
+
+import { useSelector } from 'react-redux';
+import { selectRecommend } from '../redux/features/movie/movieSlice';
+import { Link } from 'react-router-dom';
+
 const Recommends = () => {
+  const movies = useSelector(selectRecommend)
+  console.log(movies);
   return (
     <Container>
       <h4>Recommended for you</h4>
-      <Wrap>
-        <a href="2#">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfjytcYL57rNGLeuu4nkBe0D3v2RKMEdIXA&usqp=CAU"
-            alt="Cartoon"
-          />
-        </a>
-        <a href="2#">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS5vTLFNvYrFHKDXYnACBpnC6ytUxCD-LWTw&usqp=CAU"
-            alt="Cartoon"
-          />
-        </a>
-        <a href="2#">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTf5ojnfalP0WLQtr3QblciqNNjUDlVlXzOvw&usqp=CAU"
-            alt="Cartoon"
-          />
-        </a>
-        <a href="2#">
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwl8sW_CQOnWSixTY0nmxSYRd_riict7LWzg&usqp=CAU"
-            alt="Cartoon"
-          />
-        </a>
-      </Wrap>
+      <Content>
+        { 
+          movies && movies.map((movie, index) => {
+            return (
+              <Wrap key={index}>
+                <Link to={"/detail/" + movie.id}>
+                  <img src={movie.cardImg} alt={movie.title} />
+                </Link>
+              </Wrap>
+            );
+          }) 
+        }
+      </Content>
+      
     </Container>
   );
 }
@@ -41,6 +36,10 @@ const Container = styled.div`
   text-align: left;
   font-size: 18px;
 `;
+
+const Content = styled.div`
+
+`
 
 const Wrap = styled.div`
   position: relative;
