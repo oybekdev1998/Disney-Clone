@@ -1,10 +1,11 @@
 
-#Stack:
- -React;\
- -Redux(toolkit);\
- -Styled-components;\
- -Firebase;\
- -React-slick(for animation);\
+#Stack:\
+   -React;\
+   -Redux(toolkit);\
+   -Styled-components;\
+   -Firebase;\
+   -React-slick(for animation);
+   
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
