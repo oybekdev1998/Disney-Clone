@@ -38,17 +38,19 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-
-`
-
-const Wrap = styled.div`
-  position: relative;
   display: grid;
   grid-gap: 30px;
   gap: 25px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 
-  a {
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+`;
+
+const Wrap = styled.div`
+  position: relative;
+  img {
     width: 100%;
     height: 100%;
     border-radius: 5px;
@@ -62,9 +64,7 @@ const Wrap = styled.div`
       border-color: rgba(249, 249, 249, 0.8);
     }
   }
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  
   img {
     width: 100%;
     height: 100%;
