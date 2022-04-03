@@ -1,4 +1,4 @@
-#Deploy: https://disney-clone-oybek.herokuapp.com/ \
+#Deploy: https://disney-clone-oybek.herokuapp.com/
 
 #Stack:\
    -React;\
