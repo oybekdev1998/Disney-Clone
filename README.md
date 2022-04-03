@@ -1,4 +1,4 @@
-#Deploy: https://disney-xi.vercel.app/ \
+#Deploy: https://disney-clone-oybek.herokuapp.com/ \
 
 #Stack:\
    -React;\
